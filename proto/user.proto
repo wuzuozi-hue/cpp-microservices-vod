@@ -1,0 +1,44 @@
+syntax = "proto3";
+package vod.protocol;
+option cc_generic_services = true;
+
+message TempLoginRequest { string request_id = 1; }
+message TempLoginResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; string session_id = 4; }
+message SessionLoginRequest { string request_id = 1; string session_id = 2; }
+message SessionLoginResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; bool is_guest = 4; }
+message LogoutRequest { string request_id = 1; string session_id = 2; }
+message LogoutResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; }
+message GetCodeRequest { string request_id = 1; string session_id = 2; string email = 3; }
+message GetCodeResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; string code_id = 4; }
+message CodeLoginRequest { string request_id = 1; string session_id = 2; string email = 3; string code_id = 4; string verification_code = 5; }
+message CodeLoginResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; }
+message ResolveSessionRequest { string session_id = 1; }
+message ResolveSessionResponse { int32 error_code = 1; string user_id = 2; int32 role_type = 3; }
+message ProfileRequest { string request_id = 1; string session_id = 2; string target_user_id = 3; }
+message ProfileResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; string user_id = 4; string email = 5; string nickname = 6; int32 role_type = 7; string avatar_id = 8; }
+message SetNicknameRequest { string request_id = 1; string session_id = 2; string nickname = 3; }
+message SetAvatarRequest { string request_id = 1; string session_id = 2; string file_id = 3; }
+message SetPasswordRequest { string request_id = 1; string session_id = 2; string password = 3; }
+message PasswordLoginRequest { string request_id = 1; string session_id = 2; string username = 3; string password = 4; }
+message FollowRequest { string request_id = 1; string session_id = 2; string target_id = 3; bool follow = 4; }
+message AdminRequest { string request_id = 1; string session_id = 2; string action = 3; string target = 4; string nickname = 5; string memo = 6; bool enabled = 7; }
+message ListAdminsRequest { string request_id = 1; string session_id = 2; string email = 3; int32 status = 4; uint64 page_index = 5; uint64 page_count = 6; }
+message AdminInfo { string user_id = 1; string email = 2; string nickname = 3; string memo = 4; bool enabled = 5; }
+message ListAdminsResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; uint64 total = 4; repeated AdminInfo admins = 5; }
+message AccountResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; }
+service UserService {
+  rpc TempLogin(TempLoginRequest) returns (TempLoginResponse);
+  rpc SessionLogin(SessionLoginRequest) returns (SessionLoginResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc GetCode(GetCodeRequest) returns (GetCodeResponse);
+  rpc CodeLogin(CodeLoginRequest) returns (CodeLoginResponse);
+  rpc ResolveSession(ResolveSessionRequest) returns (ResolveSessionResponse);
+  rpc GetProfile(ProfileRequest) returns (ProfileResponse);
+  rpc SetNickname(SetNicknameRequest) returns (AccountResponse);
+  rpc SetAvatar(SetAvatarRequest) returns (AccountResponse);
+  rpc SetPassword(SetPasswordRequest) returns (AccountResponse);
+  rpc PasswordLogin(PasswordLoginRequest) returns (AccountResponse);
+  rpc SetFollow(FollowRequest) returns (AccountResponse);
+  rpc ManageAdmin(AdminRequest) returns (AccountResponse);
+  rpc ListAdmins(ListAdminsRequest) returns (ListAdminsResponse);
+}

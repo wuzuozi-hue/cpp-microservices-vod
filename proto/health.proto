@@ -1,0 +1,7 @@
+syntax = "proto3";
+package vod.protocol;
+option cc_generic_services = true;
+
+message HealthRequest { string nonce = 1; }
+message HealthResponse { string nonce = 1; string service_name = 2; }
+service HealthService { rpc Ping(HealthRequest) returns (HealthResponse); }

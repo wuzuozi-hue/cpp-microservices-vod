@@ -1,0 +1,31 @@
+syntax = "proto3";
+package vod.protocol;
+option cc_generic_services = true;
+
+message CreateVideoRequest {
+  string request_id = 1; string owner_id = 2; string source_file_id = 3;
+  string cover_file_id = 4; string title = 5; string description = 6;
+  int32 video_type = 7; int32 duration_seconds = 8; repeated int32 tags = 9;
+}
+message CreateVideoResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; string video_id = 4; }
+message ReviewVideoRequest { string request_id = 1; string video_id = 2; string reviewer_id = 3; bool approved = 4; }
+message ReviewVideoResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; }
+message VisibilityRequest { string request_id = 1; string video_id = 2; string actor_id = 3; bool request_review = 4; }
+message ListPublicRequest { string request_id = 1; uint64 page_index = 2; uint64 page_count = 3; string search_key = 4; bool filter_type = 5; int32 video_type = 6; bool filter_tag = 7; int32 tag_id = 8; }
+message VideoSummary { string video_id = 1; string owner_id = 2; string title = 3; string description = 4; string playlist_file_id = 5; string cover_file_id = 6; int32 status = 7; uint64 like_count = 8; uint64 play_count = 9; }
+message ListPublicResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; uint64 total = 4; repeated VideoSummary videos = 5; }
+message ListReviewRequest { string request_id = 1; string reviewer_id = 2; int32 status = 3; uint64 page_index = 4; uint64 page_count = 5; }
+message ListOwnerRequest { string request_id = 1; string owner_id = 2; uint64 page_index = 3; uint64 page_count = 4; }
+message InteractionRequest { string request_id = 1; string video_id = 2; string user_id = 3; string action = 4; string content = 5; uint32 seconds = 6; }
+message Barrage { string barrage_id = 1; string user_id = 2; string content = 3; uint32 seconds = 4; }
+message InteractionResponse { string request_id = 1; int32 error_code = 2; string error_message = 3; bool liked = 4; uint64 likes = 5; uint64 plays = 6; repeated Barrage barrage = 7; }
+service VideoService {
+  rpc CreateVideo(CreateVideoRequest) returns (CreateVideoResponse);
+  rpc ReviewVideo(ReviewVideoRequest) returns (ReviewVideoResponse);
+  rpc ChangeVisibility(VisibilityRequest) returns (ReviewVideoResponse);
+  rpc RemoveVideo(VisibilityRequest) returns (ReviewVideoResponse);
+  rpc ListPublic(ListPublicRequest) returns (ListPublicResponse);
+  rpc ListReview(ListReviewRequest) returns (ListPublicResponse);
+  rpc ListOwner(ListOwnerRequest) returns (ListPublicResponse);
+  rpc Interact(InteractionRequest) returns (InteractionResponse);
+}
