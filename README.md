@@ -27,6 +27,14 @@ ctest --test-dir build --output-on-failure
 
 测试会依据配置启用。`VOD_ETCD_BINARY` 指向 etcd 可执行文件，`VOD_MARIADB_BASEDIR` 指向 MariaDB 的 `usr` 目录，`VOD_TEST_FDFS=ON` 启用隔离的 FastDFS 测试。测试创建临时数据库、文件目录和本机服务，结束后清理；临时测试依赖可能在重启后消失。设置 `VOD_TEST_AMQP_URL` 可额外在集成测试中使用真实 RabbitMQ，测试仅使用并清理自己生成的临时队列和交换机。
 
+配置并构建 `vod_session_mysql_integration` 后，可单独运行任务租约重领用例。
+
+```sh
+python3 tests/run_job_lease_reclaim_test.py build
+```
+
+用例复用集成测试的临时 MariaDB。它验证 A 租约过期且 B 接手后，A 迟到的失败和完成操作不会改变 B 的任务记录，B 可正常完成并将视频提交审核。2026-11-17 的隔离数据库实测通过。
+
 ## 数据和配置
 
 实际运行前先准备一个专用数据库及其账号，设置 `VOD_DB_HOST`、`VOD_DB_PORT`、`VOD_DB_USER`、`VOD_DB_PASSWORD`、`VOD_DB_NAME`，再运行 `bash scripts/init-db.sh` 建表。脚本不会创建数据库本身；`CREATE TABLE IF NOT EXISTS` 不会为旧版表自动增加缺失列，升级旧数据库需单独迁移。若 MySQL 客户端不在 PATH，可用 `VOD_MYSQL_CLIENT` 指定可执行文件路径。邮箱验证码还需要 `VOD_CODE_SECRET` 和 `VOD_SMTP_URL`、`VOD_SMTP_USER`、`VOD_SMTP_PASSWORD`、`VOD_SMTP_FROM` 等配置。不要把真实密码提交进代码。
